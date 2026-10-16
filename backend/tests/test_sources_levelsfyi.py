@@ -1,6 +1,20 @@
 """Tests for sources/levelsfyi.py."""
 import asyncio
 
+import pytest
+
+
+@pytest.mark.parametrize("url,expected", [
+    ("https://www.levels.fyi/jobs?jobId=12345", "12345"),
+    ("/jobs?jobId=0btirpl8gy2sa", "0btirpl8gy2sa"),
+    ("/jobs?searchText=video&jobId=2kvy2ruyyhhla", "2kvy2ruyyhhla"),
+    ("/jobs?jobId=", ""),
+    ("/jobs?jobId=123%2F456", ""),
+])
+def test_job_ids_preserve_current_and_legacy_formats(url, expected):
+    from backend.scraper.sources.levelsfyi import _job_id_from_url
+    assert _job_id_from_url(url) == expected
+
 
 def test_exposes_run_and_scrape():
     from backend.scraper.sources import levelsfyi

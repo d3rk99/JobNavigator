@@ -5,6 +5,7 @@ import logging
 import re
 import time
 from datetime import datetime, timezone
+from urllib.parse import parse_qs, urlparse
 
 from sqlalchemy.exc import IntegrityError
 
@@ -22,6 +23,13 @@ logger = logging.getLogger("jobnavigator.playwright")
 def _is_levelsfyi(url: str) -> bool:
     """Check if URL is a levels.fyi job search page."""
     return "levels.fyi" in url.lower() and "/jobs" in url.lower()
+
+
+def _job_id_from_url(url: str) -> str:
+    """Keep both legacy numeric IDs and current opaque Levels.fyi IDs intact."""
+    values = parse_qs(urlparse(url).query).get("jobId", [])
+    job_id = values[0] if values else ""
+    return job_id if re.fullmatch(r"[A-Za-z0-9_-]+", job_id) else ""
 
 
 def _parse_levelsfyi_salary(location_text: str) -> tuple[str, str | None, int | None, int | None]:
@@ -74,10 +82,9 @@ async def _levelsfyi_extract_jobs_from_card(card, page, seen_ids: set, debug: bo
         if not href:
             continue
 
-        job_id_match = re.search(r'jobId=(\d+)', href)
-        if not job_id_match:
+        job_id = _job_id_from_url(href)
+        if not job_id:
             continue
-        job_id = job_id_match.group(1)
         if job_id in seen_ids:
             continue
         seen_ids.add(job_id)
@@ -325,10 +332,10 @@ async def _scrape_levelsfyi(url: str, browser=None, debug: bool = False, max_pag
                 async def _worker(_tab_idx, pg, job_slice):
                     nonlocal enriched
                     for j in job_slice:
-                        job_id_match = re.search(r'jobId=(\d+)', j["url"])
-                        if not job_id_match:
+                        job_id = _job_id_from_url(j["url"])
+                        if not job_id:
                             continue
-                        detail_url = f"https://www.levels.fyi/jobs?jobId={job_id_match.group(1)}"
+                        detail_url = f"https://www.levels.fyi/jobs?jobId={job_id}"
                         try:
                             detail = await _levelsfyi_extract_detail(pg, detail_url)
                             if detail.get("application_url"):
