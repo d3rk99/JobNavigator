@@ -62,7 +62,7 @@ _NOISE_SEGMENTS = {
 
 _MONTHS = "jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec"
 _DATE_SEGMENT = re.compile(
-    r"^(posted\s+)?("
+    r"^(?:(?:job\s+)?posting\s+date:\s*|posted\s+)?("
     rf"(\d{{1,2}}\s+)?({_MONTHS})[a-z]*\.?\s+\d{{1,2}}(,?\s*\d{{4}})?"
     rf"|\d{{1,2}}\s+({_MONTHS})[a-z]*\.?,?\s*\d{{4}}?"
     r"|\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}"
@@ -331,6 +331,7 @@ async def _extract_job_links_from_page(page, base_url: str, debug: bool = False)
         'a[href*="/jobs/"]', 'a[href*="/job/"]',
         'a[href*="/position"]', 'a[href*="/opening"]', 'a[href*="/role"]',
         'a[href*="/viewjob"]', 'a[href*="/requisition"]',
+        'a[href*="/JobDetail/" i]', 'a[href*="/OpportunityDetail?" i]',
         'a[href*="eightfold.ai/careers"]',
         'a[href*="/careers/"]',
     ]
@@ -499,7 +500,8 @@ async def _click_next_page(page, debug: bool = False) -> bool | dict:
             btn = await page.query_selector(selector)
             if btn:
                 is_visible = await btn.is_visible()
-                is_disabled = await btn.get_attribute("disabled")
+                is_disabled = (await btn.get_attribute("disabled")) is not None
+                is_disabled = is_disabled or await btn.evaluate("el => !!el.closest('.disabled, [aria-disabled=\"true\"]')")
                 aria_disabled = await btn.get_attribute("aria-disabled")
                 tag = await btn.evaluate("el => el.tagName")
                 text = await btn.evaluate("el => el.innerText.trim().substring(0, 80)")
@@ -535,7 +537,7 @@ async def _click_next_page(page, debug: bool = False) -> bool | dict:
             continue
 
     # Text-based fallback — skip for eightfold (avoids false positives)
-    text_patterns = ["Next", "Load more", "Show more", "Load More", "Show More"] if not is_eightfold else []
+    text_patterns = ["Next", "Load more", "Show more", "Load More", "Show More", "View More Opportunities"] if not is_eightfold else []
     for text_pat in text_patterns:
         try:
             btn = await page.query_selector(f'button:has-text("{text_pat}")')
@@ -543,7 +545,8 @@ async def _click_next_page(page, debug: bool = False) -> bool | dict:
                 btn = await page.query_selector(f'a:has-text("{text_pat}")')
             if btn:
                 is_visible = await btn.is_visible()
-                is_disabled = await btn.get_attribute("disabled")
+                is_disabled = (await btn.get_attribute("disabled")) is not None
+                is_disabled = is_disabled or await btn.evaluate("el => !!el.closest('.disabled, [aria-disabled=\"true\"]')")
                 tag = await btn.evaluate("el => el.tagName")
                 btn_text = await btn.evaluate("el => el.innerText.trim().substring(0, 80)")
                 candidate = {

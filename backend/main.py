@@ -748,6 +748,9 @@ async def trigger_db_backup():
         if result.returncode != 0:
             raise RuntimeError(f"pg_dump failed: {result.stderr}")
 
+        from backend.backup_compat import prepare_backup_for_restore
+        prepare_backup_for_restore(backup_file)
+
         # Keep only last 5 backups
         backups = sorted(glob.glob(f"{backup_dir}/jobnavigator_*.sql"))
         pruned = 0

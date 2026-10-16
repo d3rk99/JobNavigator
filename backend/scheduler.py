@@ -369,6 +369,9 @@ async def run_db_backup():
                 logger.error(f"pg_dump failed: {result.stderr}")
                 return
 
+            from backend.backup_compat import prepare_backup_for_restore
+            prepare_backup_for_restore(backup_file)
+
             logger.info(f"Database backup created: {backup_file}")
 
             backups = sorted(glob.glob(f"{backup_dir}/jobnavigator_*.sql"))

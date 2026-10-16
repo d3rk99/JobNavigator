@@ -1,4 +1,7 @@
 # Byte-compiled / optimized / DLL files
+gmail-credentials.json
+client_secret*.json
+output/pdf/
 __pycache__/
 *.py[codz]
 *$py.class

@@ -23,7 +23,34 @@ I could not verify a dedicated official JobNavigator Discord or Slack community.
 
 ## Recommended next improvements, in priority order
 
-1. **Add selected employers' career pages.** Choose 10–20 broadcast, media, university athletics or esports employers you would actually accept. Use a supported ATS feed when available, relevant title filters and the real base résumé. Validate one manual run before scheduling. Start at six hours; consider a shorter interval only for priority employers. This is my proposed starting cadence, not a universal rate limit.
+### Setup completed after the initial research
+
+Ten official employer boards are now configured, tested and enabled on six-hour intervals. Company searches use both new base résumé variants, Light scoring, production/broadcast title rules and exclusions for executive roles. NBCUniversal is filtered to the US; Riot uses US office filters and narrower media/esports titles to avoid software/game-production roles. Initial imports were run without automatic scoring to avoid adding hundreds of calls to the user's existing Full-scoring batch.
+
+| Employer | Imported on the initial run |
+| --- | ---: |
+| Nexstar Media Group | 177 |
+| The E.W. Scripps Company | 6 |
+| Sinclair Broadcast Group | 97 |
+| Hearst Television | 43 |
+| NBCUniversal | 24 |
+| Disney / ESPN | 4 |
+| FOX | 9 |
+| Gray Media | 49 |
+| Riot Games | 0 passing the focused title rules |
+| Boise State University | 0 passing the focused title rules |
+
+Total: 409 imported jobs passing title rules, before individual fit review. This is not a count of high-scoring matches. Quiet feeds and closed roles are expected. FOX currently scans its first 10 displayed jobs; Gray scans three batches (150 jobs in the test), so these are partial-board scans.
+
+Sources were verified through official career pages and linked hiring systems: [Nexstar](https://www.nexstar.tv/careers/), [Scripps](https://scripps.com/careers/find-a-job/), [Sinclair](https://edyy.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2002/jobs), [Hearst](https://joinhearsttelevision.com/careers/), [NBCUniversal](https://careers.smartrecruiters.com/nbcuniversal3), [ESPN](https://jobs.disneycareers.com/espn-jobs), [FOX](https://www.foxcareers.com/home), [Gray](https://graymedia.com/careers/), [Riot](https://www.riotgames.com/en/work-with-us), [Boise State](https://www.boisestate.edu/jobs/).
+
+The Video Production & Editing and Broadcast & Technical Production résumés preserve the existing experience, dates and qualifications, with different summaries and skill emphasis. Both exported PDFs were visually checked and fit on one page. The original general résumé remains available.
+
+Docker Desktop's Windows sign-in startup entry and all five containers' `unless-stopped` restart policies were verified. Automatic backups remain at 03:00 UTC, retaining five SQL snapshots. A restore test caught and fixed pg_dump 17's unsupported transaction_timeout setting when restoring to the app's PostgreSQL 16 server. The latest application-generated backup then restored strictly into a temporary database, which was removed; the live database was untouched. A real Windows reboot was not performed.
+
+Gmail's Desktop OAuth client and read-only grant were connected, its API profile check passed, and the backend was recreated with the local credentials. Polling is configured every 30 minutes. See [Gmail setup and token lifetime](GMAIL-SETUP.md): the Google project is currently External/Testing, so unattended operation needs attention to its seven-day refresh-token lifetime.
+
+1. **Review and expand the employer list.** The initial ten boards are configured above. Add other broadcast, media, university athletics or esports employers you would actually accept. Use a supported ATS feed when available, relevant title filters and the real base résumé. Validate one manual run before scheduling. Start at six hours; consider a shorter interval only for priority employers. This is my proposed starting cadence, not a universal rate limit.
 2. **Review a sample before broadening discovery.** Mark 10–20 results as useful or irrelevant. Check employer, location, seniority, start-date compatibility and real requirements. Adjust queries and exclusions from those decisions. A model score is a ranking aid, not a hiring probability.
 3. **Use Full scoring selectively.** Keep cheap Light scoring for incoming listings; use Full reports, tailoring and cover letters for saved roles worth pursuing. Consider separate editing/production and broadcast résumés using only verified experience.
 4. **Expand one query at a time.** Candidate terms are videographer, multimedia producer, creative producer and esports production. Measure relevant new jobs after a week before keeping each search. Avoid a large batch of overlapping searches that only creates duplicate scores and notifications.
