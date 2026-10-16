@@ -18,7 +18,8 @@ I could not verify a dedicated official JobNavigator Discord or Slack community.
 - Levels.fyi: US video search, two pages, relevant video/broadcast title filters, twelve-hour interval. Fixed its newer opaque job IDs; a direct live scrape returned 15 listings and a sampled detail contained a description and employer application URL. The complete app run passed and imported six jobs matching the title filters.
 - Ollama qwen2.5:7b on the local GPU; Light scoring, scoring/tailoring concurrency one, provisional notification threshold 70. One actual Light score completed successfully.
 - Discord notifications and daily digest configured. Digest cron is 15:00 UTC: 9 a.m. Denver during daylight time and 8 a.m. during standard time.
-- LinkedIn Personal paused at the user's request after failed login. Jobright paused because no account exists. Extension inboxes require the user to load the local Chrome extension; their presence alone does not verify capture.
+- LinkedIn Personal was subsequently re-enabled by the user. Its session now passes sign-in, but a live preview returned zero jobs; the recommended collection visibly reported "No matching jobs found." The separate session used for extension imports was also refreshed successfully. Jobright remains paused because no account exists.
+- Chrome extension 2.2.0 is installed and its dashboard presence marker was verified. Both extension inboxes are enabled with Light scoring; LinkedIn capture has video/broadcast title filters. A real popup-to-backend import remains to be verified. In the popup, confirm Connected, enable LinkedIn capture, browse LinkedIn collections, then send the captured jobs to JobNavigator.
 
 ## Recommended next improvements, in priority order
 
