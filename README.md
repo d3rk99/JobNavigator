@@ -1,5 +1,8 @@
 # JobNavigator
 
+**Discord fork:** Send job alerts and daily digests to your Discord DMs.
+See [Discord setup](DISCORD-SETUP.md) for bot configuration and local build steps.
+
 **Self-hosted job-hunt automation.**
 
 Scrape career pages and aggregators, score jobs against your résumés with an LLM, tailor résumés and cover letters, auto-fill applications from your persona, get Telegram alerts, track every application.

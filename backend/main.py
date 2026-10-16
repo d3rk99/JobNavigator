@@ -769,16 +769,17 @@ async def trigger_db_backup():
         )
 
 
-@app.post("/api/telegram/digest", tags=["triggers"], summary="Send Telegram digest", status_code=202)
+@app.post("/api/notifications/digest", tags=["triggers"], summary="Send notification digest", status_code=202)
+@app.post("/api/telegram/digest", tags=["triggers"], summary="Send notification digest", status_code=202)
 async def trigger_digest():
-    """Send the daily Telegram digest immediately. Returns immediately with a run_id."""
+    """Send the digest to enabled notification destinations; returns a run_id."""
     async def _do():
         from datetime import datetime as _dt, timezone as _tz
         from backend.scheduler import _activity_summary
         started = _dt.now(_tz.utc)
-        from backend.notifier.telegram import send_digest
+        from backend.notifier.notifications import send_digest
         await send_digest()
-        return _activity_summary(started, "telegram", "alert") or "Digest sent"
+        return (_activity_summary(started, "discord", "alert") or _activity_summary(started, "telegram", "alert") or "Digest completed (no enabled destinations)")
 
     try:
         run_id = launch_background("daily_digest", _do, trigger="manual")
@@ -907,6 +908,15 @@ async def telegram_rotate_webhook_secret():
     return {"ok": True, "webhook_secret": new_value}
 
 
+@app.post("/api/discord/test", tags=["triggers"], summary="Send test Discord DM")
+async def discord_test():
+    from backend.notifier.discord import send_test_message
+    try:
+        return await send_test_message()
+    except RuntimeError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))
+
+
 @app.post("/api/telegram/test", tags=["telegram"], summary="Send test message", status_code=202)
 async def telegram_test():
     """Send a test message to the configured Telegram chat. Returns immediately with a run_id."""
@@ -935,7 +945,7 @@ def get_scheduler_jobs():
     job_map = {
         "scrape_all": ("/scrape/run-all", "scrape_all"),
         "email_check": ("/email/check-now", "email_check"),
-        "daily_digest": ("/telegram/digest", "daily_digest"),
+        "daily_digest": ("/notifications/digest", "daily_digest"),
         "h1b_refresh": ("/h1b/refresh", "h1b_refresh"),
         "db_backup": ("/db/backup", "db_backup"),
         "job_cleanup": ("/db/cleanup", "job_cleanup"),
@@ -946,7 +956,7 @@ def get_scheduler_jobs():
     display_names = {
         "scrape_all": "Scrape all searches & companies",
         "email_check": "Check Gmail for replies",
-        "daily_digest": "Send daily Telegram digest",
+        "daily_digest": "Send daily notification digest",
         "h1b_refresh": "Refresh H-1B / LCA data",
         "db_backup": "Back up database (pg_dump)",
         "job_cleanup": "Clean up stale skipped jobs",

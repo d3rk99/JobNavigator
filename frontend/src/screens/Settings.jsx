@@ -431,7 +431,7 @@ export default function Settings() {
           info: 'Counted from the last activity on the application (stage change, email, note). Auto-rejected applications keep their history and stay in Stats.' }),
         B('Auto-reject · cron', 'Applies the auto-reject threshold.', 'reject_cron', { mono: true, cron: true, w: '135px' }),
 		B('DB backup · cron', 'Database snapshot.', 'backup_cron', { mono: true, cron: true, w: '135px' }),
-        B('Telegram digest · cron', 'Summary of new high-fit jobs.', 'digest_cron', { mono: true, cron: true, w: '135px' }),
+        B('Notification digest · cron', 'Summary sent to enabled Discord and Telegram destinations.', 'digest_cron', { mono: true, cron: true, w: '135px' }),
         B('H-1B refresh · cron', 'Re-imports and re-scans the sponsorship dataset.', 'h1b_cron', { mono: true, cron: true, w: '135px' }),
         B('Job cleanup · cron', 'Purges expired postings.', 'cleanup_cron', { mono: true, cron: true, w: '135px' }),        
       ]],
@@ -444,6 +444,9 @@ export default function Settings() {
         E('Stripped params', 'Query params removed from job URLs before duplicate detection. All utm_* are always stripped.', 'dedup_tracking_params', { list: true, sub: 'one param per line' }),
       ]],
       ['notifications', 'Integrations', 'Notifications', '', [
+        SW('Discord DMs', 'Job matches, daily digests, email responses and scrape health alerts sent by your Discord bot. Set DISCORD_BOT_TOKEN in .env and restart the backend.', 'Discord notifications are off.', 'discord_enabled'),
+        B('Discord user ID', 'Enable Developer Mode in Discord, then right-click your profile and Copy User ID. Share a server with the bot and allow DMs.', 'discord_user_id', { mono: true, w: '220px' }),
+        BT('Test Discord', 'Uses your bot token and user ID, even when automatic Discord notifications are off.', 'Send test DM', () => api.post('/discord/test')),
         SW('Telegram', 'New high-scoring jobs and the daily digest are sent to your chat. The digest schedule is under Scheduler.', 'Off — no push notifications.', 'telegram_enabled'),
         B('Chat ID', 'Your Telegram chat — get it by messaging @userinfobot.', 'telegram_chat_id', { mono: true, w: '135px' }),
         B('Score threshold', 'Only jobs scoring at or above this trigger an instant alert.', 'fit_score_threshold', { mono: true, int: true, w: '135px' }),

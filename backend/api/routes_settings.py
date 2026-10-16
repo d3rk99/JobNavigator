@@ -23,6 +23,10 @@ def get_settings(db: Session = Depends(get_db)):
     rows = db.query(Setting).all()
     result = {}
     for row in rows:
+        if row.key == "discord_user_id":
+            # Snowflakes exceed JavaScript's safe integer range. Keep all digits.
+            result[row.key] = row.value or ""
+            continue
         # Redact secrets — return empty string if not set, "••••••" if set
         if row.key in _REDACT_KEYS or any(row.key.endswith(s) for s in _REDACT_SUFFIXES):
             result[row.key] = "" if not row.value else "\u2022" * 6

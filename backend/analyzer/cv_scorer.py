@@ -731,10 +731,10 @@ async def analyze_unscored_jobs(status: str = "saved"):
 
         for snapshot, best_score in alerts:
             try:
-                from backend.notifier.telegram import send_job_alert
+                from backend.notifier.notifications import send_job_alert
                 await send_job_alert({"job": snapshot, "best_score": best_score})
             except Exception as e:
-                logger.error(f"Failed to send Telegram alert: {e}")
+                logger.error(f"Failed to send job alert: {e}")
 
     logger.info(f"Analysis pipeline complete: {total_scored} jobs processed")
 

@@ -10,7 +10,9 @@ logger = logging.getLogger("jobnavigator.seed")
 
 
 DEFAULT_SETTINGS = {
-    "fit_score_threshold": ("60", "Minimum fit score to trigger Telegram alert"),
+    "fit_score_threshold": ("60", "Minimum fit score to trigger a job alert"),
+    "discord_enabled": ("false", "Send notifications by Discord bot DM"),
+    "discord_user_id": ("", "Your Discord user ID (Developer Mode > Copy User ID)"),
     "scrape_interval_minutes": ("60", "How often the job checker runs"),
     "email_check_interval_minutes": ("30", "How often Gmail is polled"),
     "telegram_enabled": ("false", "Toggle all Telegram notifications on/off"),
@@ -450,6 +452,11 @@ def invalid_setting_values(updates: dict) -> list:
     """Human-readable complaints for every value the app could not parse back, one entry per offending key so PATCH can reject the whole request at once."""
     problems = []
     for key, value in sorted(updates.items()):
+        if key == "discord_user_id":
+            import re
+            if not isinstance(value, str) or (value.strip() and not re.fullmatch(r"[0-9]{17,20}", value.strip())):
+                problems.append("discord_user_id: must be an empty string or a 17–20 digit user ID as text")
+            continue
         if key in INT_SETTING_KEYS:
             ok = False
             if isinstance(value, bool):

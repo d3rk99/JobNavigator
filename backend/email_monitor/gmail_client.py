@@ -205,6 +205,7 @@ async def check_emails():
     db = SessionLocal()
     try:
         processed_ids = _load_processed_ids(db)
+        alerts = []
         query = _build_gmail_query(db)
 
         headers = {"Authorization": f"Bearer {access_token}"}
@@ -265,6 +266,7 @@ async def check_emails():
                     matched_app = _match_email_to_application(db, from_header, subject, body, sender_domain)
                     if matched_app:
                         _apply_email_to_app(db, matched_app, class_type, body, subject)
+                        alerts.append(_email_alert_data(matched_app, class_type))
                     processed_ids.add(msg_id)
                     continue
 
@@ -304,6 +306,7 @@ async def check_emails():
 
                         if matched_app:
                             _apply_llm_result_to_app(db, matched_app, llm_result, body, subject)
+                            alerts.append(_email_alert_data(matched_app, llm_result["status"]))
 
                         # Status + confidence only — a summary paraphrasing the recruiter's email
                         # body is not something we want persisted in activity_log.
@@ -337,6 +340,24 @@ async def check_emails():
         raise  # Let tracked_run / caller mark the JobRun as failed
     finally:
         db.close()
+
+    # Delivery failures must not roll back status changes or reprocess Gmail.
+    from backend.notifier.notifications import send_email_alert
+    for alert in alerts:
+        try:
+            await send_email_alert(alert)
+        except Exception:
+            logger.warning("Email notification delivery failed")
+
+
+def _email_alert_data(app, response_type):
+    job = app.job
+    return {
+        "company": job.company if job else "Unknown",
+        "role": job.title if job else "",
+        "type": response_type,
+        "snippet": app.last_email_snippet or "",
+    }
 
 
 def _extract_body(payload: dict) -> str:

@@ -206,9 +206,9 @@ async def send_daily_digest():
         async with tracked_run("daily_digest", "scheduler") as run:
             logger.info("Sending daily digest...")
             started = datetime.now(timezone.utc)
-            from backend.notifier.telegram import send_digest
+            from backend.notifier.notifications import send_digest
             await send_digest()
-            run.summary = _activity_summary(started, "telegram", "alert") or "Digest sent"
+            run.summary = (_activity_summary(started, "discord", "alert") or _activity_summary(started, "telegram", "alert") or "Digest completed (no enabled destinations)")
     except JobAlreadyRunningError as e:
         logger.warning(f"Scheduler skipped: {e}")
 
@@ -298,7 +298,7 @@ async def run_job_cleanup_auto():
 
 
 async def check_scrape_health(since=None):
-    """Alert via Telegram if any scraper has failed 3+ times consecutively.
+    """Alert configured destinations if any scraper has failed 3+ times consecutively.
     With `since`, only a source that ran at or after it can alert: a source that
     stopped running (a paused search) keeps its last three rows forever."""
     from backend.models.db import ScrapeLog
@@ -321,6 +321,8 @@ async def check_scrape_health(since=None):
                 alerts.append(source)
 
         if alerts:
+            from backend.notifier.discord import send_health_alert
+            await send_health_alert(alerts)
             try:
                 from backend.notifier.telegram import _send_message, _is_enabled, _get_chat_id
                 if _is_enabled():

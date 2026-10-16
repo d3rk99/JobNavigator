@@ -1253,6 +1253,26 @@ export default function SettingsPage() {
       </>)}
 
       {activeTab === 'accounts' && (<>
+      <section className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg p-4 mb-6">
+        <h2 className="font-semibold text-lg dark:text-gray-100 mb-3">Discord DMs</h2>
+        <p className="text-sm text-gray-500 mb-3">Set DISCORD_BOT_TOKEN in .env and restart the backend. Invite the bot to your server and allow direct messages.</p>
+        <label className="block text-sm mb-2">Automatic notifications
+          <select value={String(settings.discord_enabled ?? 'false')}
+            onChange={e => saveSetting('discord_enabled', e.target.value)} className="ml-3 border rounded p-2 dark:bg-gray-700">
+            <option value="false">Off</option><option value="true">On</option>
+          </select>
+        </label>
+        <label className="block text-sm mb-3">Discord user ID
+          <input type="text" value={settings.discord_user_id || ''}
+            onChange={e => setSettings({...settings, discord_user_id: e.target.value})}
+            onBlur={e => saveSetting('discord_user_id', e.target.value)}
+            placeholder="Copy User ID in Developer Mode" className="ml-3 border rounded p-2 dark:bg-gray-700" />
+        </label>
+        <button onClick={() => triggerAction('/discord/test')} disabled={triggerStatus['/discord/test'] === 'running'} className="border rounded px-3 py-2 text-sm">
+          {triggerStatus['/discord/test'] === 'running' ? 'Sending…' : triggerStatus['/discord/test'] === 'done' ? 'DM sent!' : 'Send test Discord DM'}
+        </button>
+        {triggerStatus['/discord/test'] === 'error' && <p role="alert" className="text-sm text-red-600 mt-2">Delivery failed. Check your bot token, user ID, shared server and DM privacy settings.</p>}
+      </section>
       {/* Notification Settings */}
       <section className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg p-4 mb-6">
         <div className="flex items-center gap-2 mb-3">

@@ -26,9 +26,9 @@ const BUCKET_COLOR = {
 }
 const TYPE_CLASS = {
   scrape: 'sm-keyword', h1b: 'sm-lipersonal', cv_score: 'sm-levels',
-  email: 'sm-freehire', telegram: 'sm-jobright',
+  email: 'sm-freehire', telegram: 'sm-jobright', discord: 'sm-jobright',
 }
-const TYPE_OPTS = [['', 'All types'], ['scrape', 'Scrape'], ['h1b', 'H-1B'], ['cv_score', 'Résumé score'], ['email', 'Email'], ['telegram', 'Telegram']]
+const TYPE_OPTS = [['', 'All types'], ['scrape', 'Scrape'], ['h1b', 'H-1B'], ['cv_score', 'Résumé score'], ['email', 'Email'], ['discord', 'Discord'], ['telegram', 'Telegram']]
 
 // v2 draws controls as span/div, so spread kb(fn) on one to make it focusable and
 // keyboard-operable; the focus ring is theme.css's `[tabindex="0"]:focus-visible`.

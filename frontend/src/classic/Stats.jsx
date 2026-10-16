@@ -10,6 +10,7 @@ const TYPE_COLORS = {
   cv_score: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
   email: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300',
   telegram: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900 dark:text-cyan-300',
+  discord: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300',
 }
 
 const SCORE_COLORS = { "0-20": "#ef4444", "21-40": "#f97316", "41-60": "#eab308", "61-80": "#22c55e", "81-100": "#6366f1" }
@@ -598,6 +599,7 @@ export default function Stats() {
               <option value="cv_score">Resume Score</option>
               <option value="email">Email</option>
               <option value="telegram">Telegram</option>
+              <option value="discord">Discord</option>
             </select>
             <input type="text" placeholder="Company..." value={activityCompany}
               onChange={e => setActivityCompany(e.target.value)}
