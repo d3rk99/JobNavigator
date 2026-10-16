@@ -165,6 +165,13 @@ Install: `chrome://extensions` › Developer mode › Load unpacked › `extensi
 
 **Gmail** — `python backend/gmail_oauth_setup.py`, OAuth credentials in `.env`.
 
+**Ollama** — choose **Ollama (Local)** and an installed model in Settings.
+The backend uses `http://localhost:11434` by default. When the backend runs
+in Docker, set its `OLLAMA_BASE_URL` environment variable to
+`http://host.docker.internal:11434` for Ollama on Windows, or
+`http://ollama:11434` for an Ollama service on the same Compose network.
+Recreate the backend after changing its environment.
+
 ## Tech Stack
 
 | Layer | Technology |
